@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "251412237232",
+    "project_id": "club-announcements-74ee1",
+    "storage_bucket": "club-announcements-74ee1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251412237232:android:69c0526caa64892a5d2475",
+        "android_client_info": {
+          "package_name": "com.example.club_announcements"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv69-G1Ufdx19ZauePSylrXV6vgBfUXEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
