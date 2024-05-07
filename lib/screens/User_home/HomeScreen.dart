@@ -1,13 +1,15 @@
 import 'package:club_announcements/blocs/MyUserBloc/my_user_bloc.dart';
 import 'package:club_announcements/blocs/Update_user_info/update_user_info_bloc.dart';
-import 'package:club_announcements/blocs/authentication/authentication_bloc.dart';
+import 'package:club_announcements/blocs/create_post_bloc/create_post_bloc.dart';
+import 'package:club_announcements/blocs/get_post_bloc/get_post_bloc.dart';
 import 'package:club_announcements/blocs/signin/sign_in_bloc.dart';
+import 'package:club_announcements/screens/User_home/PostScreen.dart';
 import 'package:club_announcements/screens/User_home/UserHome.dart';
-import 'package:club_announcements/screens/admin/AdminHome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:post_repository/post_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +30,40 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         child: Scaffold(
+          floatingActionButton: BlocBuilder<MyUserBloc, MyUserState>(
+            builder: (context, state) {
+              if (state.status == MyUserStatus.success) {
+                if (state.user!.isAdmin) {
+                  return FloatingActionButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) =>
+                              BlocProvider<CreatePostBloc>(
+                            create: (context) => CreatePostBloc(
+                                postRepository: FirebasePostRepository()),
+                            child: PostScreen(state.user!),
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.add),
+                  );
+                } else {
+                  return const FloatingActionButton(
+                    onPressed: null,
+                    child: Icon(Icons.clear),
+                  );
+                }
+              } else {
+                return const FloatingActionButton(
+                  onPressed: null,
+                  child: Icon(Icons.clear),
+                );
+              }
+            },
+          ),
           appBar: AppBar(
             centerTitle: false,
             elevation: 0,
@@ -43,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final ImagePicker picker = ImagePicker();
                                 final XFile? image = await picker.pickImage(
                                     source: ImageSource.gallery,
-                                    maxHeight: 500,
                                     maxWidth: 500,
                                     imageQuality: 40);
                                 if (image != null) {
@@ -123,7 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           body: BlocProvider.value(
             value: context.read<MyUserBloc>(),
-            child: UserScreen(),
+            child: BlocProvider(
+              create: (context) => GetPostBloc(postRepository: FirebasePostRepository())..add(GetPosts()),
+              child: UserScreen(),
+            ),
           ),
         ));
   }
