@@ -1,3 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:post_repository/post_repository.dart';
+
 import 'package:club_announcements/blocs/MyUserBloc/my_user_bloc.dart';
 import 'package:club_announcements/blocs/Update_user_info/update_user_info_bloc.dart';
 import 'package:club_announcements/blocs/create_post_bloc/create_post_bloc.dart';
@@ -5,11 +11,6 @@ import 'package:club_announcements/blocs/get_post_bloc/get_post_bloc.dart';
 import 'package:club_announcements/blocs/signin/sign_in_bloc.dart';
 import 'package:club_announcements/screens/User_home/PostScreen.dart';
 import 'package:club_announcements/screens/User_home/UserHome.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:post_repository/post_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -137,7 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fit: BoxFit.cover)),
                             ),
                       const SizedBox(width: 10),
-                      Text("Welcome ${state.user!.name}")
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text("Welcome ${state.user!.name}"))
                     ],
                   );
                 } else {

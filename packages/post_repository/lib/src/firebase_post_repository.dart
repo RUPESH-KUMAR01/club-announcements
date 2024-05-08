@@ -14,18 +14,19 @@ class FirebasePostRepository implements PostRepository {
   @override
   Future<Post> createPost(Post post,String file) async {
     try {
+      post.postId = const Uuid().v1();
+			post.createAt = DateTime.now();
       File imageFile = File(file);
 			Reference firebaseStoreRef = FirebaseStorage
 				.instance
 				.ref()
-				.child('${post.myUser.id}/post/${post.myUser.id}_lead');
+				.child('${post.myUser.id}/post/${post.postId}_lead');
 			await firebaseStoreRef.putFile(
         imageFile,
       );
 			String url = await firebaseStoreRef.getDownloadURL();
       post.picture=url;
-			post.postId = const Uuid().v1();
-			post.createAt = DateTime.now();
+
 
       await postCollection
 				.doc(post.postId)
@@ -41,7 +42,7 @@ class FirebasePostRepository implements PostRepository {
   @override
   Future<List<Post>> getPost() {
     try {
-      return postCollection
+      return postCollection.orderBy('createAt',descending: true)
 				.get()
 				.then((value) => value.docs.map((e) => 
 					Post.fromEntity(PostEntity.fromDocument(e.data()))

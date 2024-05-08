@@ -22,6 +22,7 @@ class _PostScreenState extends State<PostScreen> {
   late Post post;
   XFile? file;
   bool _selected=false;
+  bool _state=false;
 	final TextEditingController _controller = TextEditingController();
   final TextEditingController _titleController=TextEditingController();
 
@@ -34,14 +35,32 @@ class _PostScreenState extends State<PostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+          floatingActionButton: FloatingActionButton(
+                                onPressed: () {
+                                  if(_controller.text.length != 0) {
+                                    setState(() {
+                                      post.desc = _controller.text;
+                                    });
+                                    if(_selected && _titleController.text.length!=0){
+                                      post.post=_titleController.text;
+                                      context.read<CreatePostBloc>().add(CreatePost(post,file!.path));
+                                    }
+                                  }
+                                },
+                                child: const Icon(Icons.add),
+                              ),
       appBar: AppBar(title: Text('Create Post'),),
       body:BlocListener<CreatePostBloc, CreatePostState>(
             listener: (context, state) {
               if(state is CreatePostSuccess) {
                 Navigator.pop(context);
+              }else if(state is CreatePostLoading){
+                _state=true;
+              }else if(state is CreatePostFailure){
+                _state=false;
               }
             },
-              child: SingleChildScrollView(
+              child: _state? Center(child: CircularProgressIndicator()) : SingleChildScrollView(
                 child: Column(
                   children: [
                     Center(
@@ -82,30 +101,7 @@ class _PostScreenState extends State<PostScreen> {
                       height: MediaQuery.of(context).size.height*0.5,
                       child: GestureDetector(
                           onTap: () => FocusScope.of(context).unfocus(),
-                          child: Scaffold( 
-                              backgroundColor: Theme.of(context).colorScheme.background,
-                              floatingActionButton: FloatingActionButton(
-                                onPressed: () {
-                                  if(_controller.text.length != 0) {
-                                    setState(() {
-                                      post.desc = _controller.text;
-                                    });
-                                    if(_selected && _titleController.text.length!=0){
-                                      post.post=_titleController.text;
-                                      context.read<CreatePostBloc>().add(CreatePost(post,file!.path));
-                                    }
-                                  }
-                                },
-                                child: const Icon(Icons.add),
-                              ),
-                              appBar: AppBar(
-                                elevation: 0,
-                                foregroundColor: Colors.white,
-                                title: const Text(
-                                  'Create a Announcement !'
-                                ),
-                              ),
-                              body: SingleChildScrollView(
+                          child:SingleChildScrollView(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: TextField(
@@ -128,7 +124,6 @@ class _PostScreenState extends State<PostScreen> {
                               ),
                             ),
                         ),
-                    ),
                   ],
                 ),
               ),
